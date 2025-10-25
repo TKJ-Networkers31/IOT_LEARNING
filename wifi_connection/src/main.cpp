@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <ESP32Ping.h>
+
+const IPAddress routerIP(192,168,0,1);
 
 // String ssid = "haha"; //ssid wifi yang di konek
 // String pw = "hahahaha"; //password dari ssid wifi yang digunakan
@@ -23,6 +26,9 @@ void setup() {
     delay(500);
   }
   Serial.println("wifi connected");
+  if(Ping.ping(routerIP)){
+    Serial.println("esp connected to router");
+  }
   Serial.println(WiFi.SSID());
   Serial.println(WiFi.RSSI());
   Serial.println(WiFi.macAddress());
@@ -33,4 +39,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  Serial.println(Ping.averageTime());
+  delay(2000);
 }
