@@ -1,16 +1,22 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
 #include <ESP32Ping.h>
 void smrtWifi();
 void tmplIdnty();
 void connectWifi();
+void getHttp();
+void posthttp();
 const IPAddress routeIp(192,168,0,1);
+const String google = "www.google.com";
 void setup() {
   Serial.begin(9600);
   connectWifi();
-  if(Ping.ping(routeIp)){
-    Serial.println("Terhubung ke router");
+  if(Ping.ping(google.c_str())){
+    Serial.println("Terhubung ke internet");
   }
+  getHttp();
 }
 
 void loop() {
@@ -53,4 +59,23 @@ void connectWifi(){
   }
   Serial.println("WIFI CONNECTED");
   tmplIdnty();
+}
+
+void getHttp(){
+  String url = "https://reqres.in/api/users/2";
+  HTTPClient http;
+  String respon;
+  http.begin(url);
+  http.GET();
+  respon = http.getString();
+  Serial.println(respon);
+  JsonDocument doc;
+  deserializeJson(doc,respon);
+  JsonObject obj = doc.as<JsonObject>();
+  String data = obj[String("data")];
+  Serial.println(data);
+}
+
+void postHttp(){
+  
 }
