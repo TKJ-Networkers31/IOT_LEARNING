@@ -1,19 +1,30 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <ESP32Ping.h>
+#include <PubSubClient.h>
 
 void smrtWifi();
 void connWifi();
 void prntWifi();
+void connMqtt();
 
 const String google = "www.google.com";
+const String dns = "broker.emqx.io";
+const IPAddress server(192,168,0,2);
+WiFiClient client;
+PubSubClient mqtt(client);
 
 void setup() {
-
+  Serial.begin(9600);
+  connWifi();
+  mqtt.setServer(dns.c_str(),1883);
 }
 
 void loop() {
-
+  if(!mqtt.connected()){
+    connMqtt();
+  }
+  mqtt.loop();
 }
 
 void smrtWifi(){
@@ -65,5 +76,15 @@ void prntWifi(){
   }else{
     Serial.println("gagal terhubung");
   }
+}
+
+void connMqtt(){
+  Serial.println("connecting to mqtt....");
+  while (!mqtt.connected()){
+    if(mqtt.connect("esp32-1")){
+      mqtt.subscribe("esp32/coba");
+    }
+  }
+  
 }
 
