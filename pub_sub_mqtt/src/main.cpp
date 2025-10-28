@@ -13,14 +13,15 @@ void receiveM(char* topic, byte* isi, unsigned int length);
 
 //deklarasi variabel
 const int led = 13;
-const IPAddress serverBroker(192,168,0,2);
-const IPAddress gateway(192,168,0,2);
+const IPAddress serverBroker(192,168,1,2);
+const IPAddress gateway(192,168,0,1);
 const String google = "www.google.com";
 WiFiClient client;
 PubSubClient mqtt(client);
 
 //fungsi utama
 void setup() {
+  pinMode(led,OUTPUT);
   Serial.begin(9600);
   conectWifi();
   mqtt.setServer(serverBroker,1883);
@@ -106,7 +107,7 @@ void conectbroker(){
   while (!mqtt.connected()){
     if(mqtt.connect("esp-1")){
       mqtt.subscribe("iot/suhu");
-      mqtt.subscribe("esp/control");
+      // mqtt.subscribe("esp/control");
       Serial.println("connected to broker");
     }else{
       Serial.print("gagal koneksi, rc= ");
@@ -138,18 +139,17 @@ void conectbroker(){
 void receiveM(char* topic, byte* isi, unsigned int length){
   String massage = "";
   for (int i = 0; i < length; i++){
-    Serial.print(char(isi[i]));
+    // Serial.print(char(isi[i]));
     massage += char(isi[i]);
   }
   if(String(topic) == "esp/control"){
     Serial.println("receive message by topic : ");
     Serial.print(topic);
+    Serial.print(massage);
     if (massage == "ON"){
       digitalWrite(led, HIGH);
     }else if (massage == "OFF"){
       digitalWrite(led,LOW);
-    }else{
-
     }
   }
   Serial.println();
